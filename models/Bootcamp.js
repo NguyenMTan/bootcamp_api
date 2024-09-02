@@ -1,5 +1,5 @@
-const { type } = require("express/lib/response");
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const BootcampSchema = new mongoose.Schema({
     name: {
@@ -67,16 +67,16 @@ const BootcampSchema = new mongoose.Schema({
             "Other",
         ],
     },
-    // averageRating: {
-    //     type: Number,
-    //     min: [1, "Rating must be at least 1"],
-    //     max: [10, "Rating must can not be more than 10"],
-    // },
-    // averageCost: Number,
-    // photo: {
-    //     type: String,
-    //     default: "no-photo.jpg",
-    // },
+    averageRating: {
+        type: Number,
+        min: [1, "Rating must be at least 1"],
+        max: [10, "Rating must can not be more than 10"],
+    },
+    averageCost: Number,
+    photo: {
+        type: String,
+        default: "no-photo.jpg",
+    },
     housing: {
         type: Boolean,
         default: false,
@@ -97,6 +97,12 @@ const BootcampSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+});
+
+//Create bootcamp slug from the name
+BootcampSchema.pre("save", function (next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
 });
 
 module.exports = mongoose.model("Bootcamp", BootcampSchema);
